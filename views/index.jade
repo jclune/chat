@@ -1,0 +1,16 @@
+extends layout
+
+block script
+  script(src = '/socket.io/socket.io.js')
+  script.
+    $(function() {
+      var socket = io.connect();
+    });
+
+block content
+  h1= title
+  div
+    span username:
+    form(type="get", action="chatlist")
+      input(type="text", name="user")
+      input(type="submit")

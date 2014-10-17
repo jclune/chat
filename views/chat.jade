@@ -1,0 +1,47 @@
+extends layout
+
+block script
+  script(src = '/socket.io/socket.io.js')
+  script.
+    $(function() {
+      var socket = io.connect();
+      var roomId = $('#roomId').val();
+      socket.emit('subscribe', roomId);
+
+      socket.on('reply message', function(data){
+        $li = $('<li>');
+        var json = JSON.parse(data.message);
+        $li.append($('<span><strong>' + json.user + ' </strong></span><span>('+ json.time +'):</span> ' + json.message + '</span>'));
+        $('#list').append($li);
+      });
+      $('#message').on('keydown', function(ev){
+        var self = $(this);
+        var message = self.val();
+        var d = new Date();
+        var time = d.getHours() + 'h ' + d.getMinutes() + 'm ' + d.getSeconds() + 's';
+        var user = $('#name').val();
+        var json = {user: user, time: time, message: message};
+        var jsonString = JSON.stringify(json);
+
+        if ((ev.which === 13 || ev.keyCode === 13) && self.val() != ''){
+          socket.emit('send message', {room: roomId, message: jsonString});
+          self.val('');
+        }
+      });
+    });
+
+block content
+  h1= title
+  h2
+    if (user)
+      span= user
+    if (room)
+      span= ' is in ' + room + ' room!' + ' id: ' + roomId
+  div
+    input(type="hidden", id="roomId", value=roomId)
+    input(type="hidden", id="name", value=user)
+    a(href="/chatlist?name="+user) leave room
+    br
+    span write message
+    input#message
+    ul#list

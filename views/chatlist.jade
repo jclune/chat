@@ -1,0 +1,26 @@
+extends layout
+
+block script
+  script.
+    $(function() {
+    });
+
+block content
+  h1= title
+  if (user)
+    h2= 'hello ' + user + '!'
+  div
+    span new room:
+    form(type="get", action="chat")
+      if (user)
+        input(type="hidden", name="user", value=user)
+      input(type="text", name="room")
+      input(type="submit")
+  div
+    br
+    span public rooms:
+    ul#rooms
+      if (chatlist)
+        each keyVal, index in chatlist
+          li
+            a(href="/chat?user="+user+"&room="+keyVal) room: #{keyVal}
